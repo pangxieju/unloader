@@ -1,0 +1,16 @@
+# IDE
+.project
+*.bak
+.vscode
+.DS_Store
+.idea
+jsconfig.json
+
+# GIT
+#.gitkeep
+
+# Nodejs
+node_modules
+
+# Package file
+npm-debug.log
