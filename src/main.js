@@ -13,20 +13,19 @@ import { throwError } from './throwError';
 //   }
 //   return
 // };
-
-//过滤请求
+const service
+// 请求拦截器
 axios.interceptors.request.use(
   config => {
-    // Object.assign(c, config);
+    console.log(config);
 
-    if (['get'].includes(config.method)
-    && config.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
-      // config.paramsSerializer = (params) => {
-      //   return Qs.stringify(params, {arrayFormat: 'repeat'});
-      // }
-      config.transformRequest = [function (params) {
+    if (config.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+      config.paramsSerializer = (params) => {
         return Qs.stringify(params, {arrayFormat: 'repeat'});
-      }]
+      }
+      // config.transformRequest = [function (params) {
+      //   return Qs.stringify(params, {arrayFormat: 'repeat'});
+      // }]
     };
 
     return config;
@@ -36,7 +35,7 @@ axios.interceptors.request.use(
   }
 );
 
-// 添加响应拦截器
+// 响应拦截器
 axios.interceptors.response.use(
   response => {
     console.log(response.status);
@@ -56,10 +55,7 @@ axios.interceptors.response.use(
   },
   error => {
     if (error && error.response) {
-      let res = {};
-      res.code = error.response.status;
-      res.msg = throwError(error.response.status, error.response);
-      return Promise.reject(res);
+      error.message = throwError(error.response.status, error.response.config.url);
     }
     return Promise.reject(error);
   }
@@ -71,11 +67,14 @@ axios.interceptors.response.use(
 //   // axios.call(this);
 //   this.get = axios.get;
 // };
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 export default class {
   constructor(params) {
-    console.log(params);
-    Object.assign(axios.defaults, params);
-    console.log(axios.defaults);
-    this.get = axios.get;
+    // console.log(params);
+    axios.defaults = Object.assign(axios.defaults, params);
+
+    console.log(axios.defaults.headers.post);
+    // this.get = axios.get;
+    this.post = axios.post;
   }
 }
